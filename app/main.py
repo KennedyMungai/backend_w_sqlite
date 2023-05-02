@@ -105,3 +105,16 @@ async def list_posts(
     results = [PostDB(**row) for row in rows]
 
     return results
+
+
+@app.get("/posts/{id}", name="Get a post", description="Endpoint to get a post", response_model=PostDB, tags=['Posts'])
+async def get_post(post: PostDB = Depends(get_post_or_404)) -> PostDB:
+    """Get a post from the database
+
+    Args:
+        post (PostDB, optional): The post to be fetched. Defaults to Depends(get_post_or_404).
+
+    Returns:
+        PostDB: The post fetched from the database
+    """
+    return post
