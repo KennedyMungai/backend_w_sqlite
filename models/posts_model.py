@@ -1,6 +1,6 @@
 """The file containing the model for the posts data"""
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, Field
 from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
@@ -44,6 +44,10 @@ class PostDB(PostBase):
         PostBase (PostBase class): The base model for the posts data
     """
     id: int
+
+
+class PostPublic(PostDB):
+    comments: List[CommentDB]
 
 
 metadata = MetaData()
