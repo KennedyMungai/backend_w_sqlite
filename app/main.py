@@ -1,10 +1,11 @@
 """The entrypoint fot the app"""
-from databases import Database
-from fastapi import FastAPI, status, Depends, HTTPException
-from database.database import database, sqlalchemy_engine, get_database
-from models.posts_model import PostCreate, PostDB, metadata, PostBase
 from typing import Tuple
 
+from databases import Database
+from fastapi import Depends, FastAPI, HTTPException, status
+
+from database.database import database, get_database, sqlalchemy_engine
+from models.posts_model import PostBase, PostCreate, PostDB, metadata
 
 app = FastAPI()
 
@@ -92,7 +93,7 @@ async def list_posts(
 
     Args:
         _pagination (Tuple[int, int], optional): This defined pagination for the data fetched. Defaults to Depends(pagination).
-        _database (Database, optional): The datavase connection. Defaults to Depends(get_database).
+        _database (Database, optional): The database connection. Defaults to Depends(get_database).
 
     Returns:
         list[PostDB]: A list of all the posts from the database
