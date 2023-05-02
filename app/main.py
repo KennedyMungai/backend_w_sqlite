@@ -43,7 +43,12 @@ async def shutdown():
     await database.disconnect()
 
 
-@app.get('/', name="Root endpoint", description="An endpoint to test the app", tags=['Root'])
+@app.get(
+    '/', 
+    name="Root endpoint", 
+    description="An endpoint to test the app", 
+    tags=['Root']
+    )
 async def root() -> dict[str, str]:
     """The root endpoint for the app
 
@@ -61,7 +66,10 @@ async def root() -> dict[str, str]:
     response_model=PostDB,
     tags=['Posts']
 )
-async def create_post(_post: PostCreate, _database: Database = Depends(get_database)) -> PostDB:
+async def create_post(
+    _post: PostCreate, 
+    _database: Database = Depends(get_database)
+    ) -> PostDB:
     """A create post endpoint
 
     Args:
@@ -107,8 +115,16 @@ async def list_posts(
     return results
 
 
-@app.get("/posts/{id}", name="Get a post", description="Endpoint to get a post", response_model=PostDB, tags=['Posts'])
-async def get_post(post: PostDB = Depends(get_post_or_404)) -> PostDB:
+@app.get(
+    "/posts/{id}", 
+    name="Get a post", 
+    description="Endpoint to get a post", 
+    response_model=PostDB, 
+    tags=['Posts']
+    )
+async def get_post(
+    _post: PostDB = Depends(get_post_or_404)
+    ) -> PostDB:
     """Get a post from the database
 
     Args:
@@ -117,4 +133,4 @@ async def get_post(post: PostDB = Depends(get_post_or_404)) -> PostDB:
     Returns:
         PostDB: The post fetched from the database
     """
-    return post
+    return _post
