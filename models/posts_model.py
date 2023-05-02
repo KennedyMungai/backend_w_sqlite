@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text, ForeignKey
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
+                        String, Table, Text)
 
 
 class PostBase(BaseModel):
