@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
-from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text
+from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text, ForeignKey
 
 
 class PostBase(BaseModel):
@@ -55,4 +55,13 @@ posts = Table(
     Column('publication_date', DateTime(), nullable=False),
     Column('title', String(255), nullable=False),
     Column('content', Text, nullable=False),
+)
+
+comments = Table(
+    "comments",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("post_id", ForeignKey("posts.id", ondelete="CASCADE"), nullable=False),
+    Column("publication_date", DateTime, nullable=False),
+    Column("content", Text, nullable=False)
 )
