@@ -167,3 +167,24 @@ async def update_post(
     _post_db = await get_post_or_404(_post_id, _database)
 
     return _post_db
+
+
+@app.delete(
+    "/posts/{id}",
+    name="Delete a post",
+    tags=['Posts'],
+    status_code=status.HTTP_204_NO_CONTENT,
+    description="Endpoint to delete a post"
+)
+async def delete_post(
+    _post: PostDB = Depends(get_post_or_404),
+    _database: Database = Depends(get_database)
+):
+    """Delete a post from the database
+
+    Args:
+        post (PostDB, optional): The post to be deleted. Defaults to Depends(get_post_or_404).
+        database (Database, optional): The database connection. Defaults to Depends(get_database).
+    """
+    delete_query = posts.delete().where(posts.c.id == _post.id)
+    await _database.execute(delete_query)
