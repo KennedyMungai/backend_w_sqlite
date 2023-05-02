@@ -10,7 +10,8 @@
 		},
 		"python.formatting.provider": "none",
 		"cSpell.words": [
-			"autopep"
+			"autopep",
+			"ondelete"
 		]
 	}
 }
