@@ -5,7 +5,7 @@ from databases import Database
 from fastapi import Depends, FastAPI, HTTPException, status
 
 from database.database import database, get_database, sqlalchemy_engine
-from models.posts_model import PostBase, PostCreate, PostDB, metadata
+from models.posts_model import PostBase, PostCreate, PostDB, PostPartialUpdate, metadata
 
 app = FastAPI()
 
@@ -44,11 +44,11 @@ async def shutdown():
 
 
 @app.get(
-    '/', 
-    name="Root endpoint", 
-    description="An endpoint to test the app", 
+    '/',
+    name="Root endpoint",
+    description="An endpoint to test the app",
     tags=['Root']
-    )
+)
 async def root() -> dict[str, str]:
     """The root endpoint for the app
 
@@ -67,9 +67,9 @@ async def root() -> dict[str, str]:
     tags=['Posts']
 )
 async def create_post(
-    _post: PostCreate, 
+    _post: PostCreate,
     _database: Database = Depends(get_database)
-    ) -> PostDB:
+) -> PostDB:
     """A create post endpoint
 
     Args:
@@ -116,15 +116,15 @@ async def list_posts(
 
 
 @app.get(
-    "/posts/{id}", 
-    name="Get a post", 
-    description="Endpoint to get a post", 
-    response_model=PostDB, 
+    "/posts/{id}",
+    name="Get a post",
+    description="Endpoint to get a post",
+    response_model=PostDB,
     tags=['Posts']
-    )
+)
 async def get_post(
     _post: PostDB = Depends(get_post_or_404)
-    ) -> PostDB:
+) -> PostDB:
     """Get a post from the database
 
     Args:
@@ -134,3 +134,36 @@ async def get_post(
         PostDB: The post fetched from the database
     """
     return _post
+
+
+@app.patch(
+    "/posts/{id}",
+    name="Update a post",
+    description="Endpoint to update a post",
+    tags=['Posts']
+)
+async def update_post(
+    _post_update: PostPartialUpdate,
+    _post: PostDB = Depends(get_post_or_404),
+    _database: Database = Depends(get_database)
+) -> PostDB:
+    """The Post Update endpoint
+
+    Args:
+        _post_update (PostPartialUpdate): _description_
+        _post (PostDB, optional): _description_. Defaults to Depends(get_post_or_404).
+        _database (Database, optional): _description_. Defaults to Depends(get_database).
+
+    Returns:
+        PostDB: _description_
+    """
+    _update_query = (
+        _posts.update()
+        .where(_posts.c.id == _post.id)
+        .values(_post_update.dict(exclude_unset=True))
+    )
+
+    _post_id = await _database.execute(_update_query)
+    _post_db = await get_post_or_404(_post_id, _database)
+
+    return _post_db
