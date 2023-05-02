@@ -1,5 +1,49 @@
 """The file containing the model for the posts data"""
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field
 from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text
+
+
+class PostBase(BaseModel):
+    """The base model for the posts data
+
+    Args:
+        BaseModel (Pydantic): The parent of all pydantic models
+    """
+    title: str
+    content: str
+    publication_date: datetime = Field(default_factory=datetime.now)
+
+
+class PostPartialUpdate(BaseModel):
+    """The partial update model class
+
+    Args:
+        BaseModel (Pydantic): The parent of all pydantic models
+    """
+    title: Optional[str] = None
+    content: Optional[str] = None
+
+
+class PostCreate(PostBase):
+    """The PostCreate base model
+
+    Args:
+        PostBase (PostBase): The base Model for thr posts data
+    """
+    pass
+
+
+class PostDB(PostBase):
+    """The version of the data that is stored in the database
+
+    Args:
+        PostBase (PostBase class): The base model for the posts data
+    """
+    id: int
+
 
 metadata = MetaData()
 
