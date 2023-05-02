@@ -46,7 +46,7 @@ async def root() -> dict[str, str]:
 
 
 @app.post("/posts", name="Create a post", description="Endpoint to create a post", status_code=status.HTTP_201_CREATED, response_model=PostDB)
-async def create_post(post: PostCreate, database: Database = Depends(get_database)) -> PostDB:
+async def create_post(_post: PostCreate, _database: Database = Depends(get_database)) -> PostDB:
     """A create post enpoint
 
     Args:
@@ -56,8 +56,8 @@ async def create_post(post: PostCreate, database: Database = Depends(get_databas
     Returns:
         PostDB: The template for the returned data
     """
-    insert_query = posts.insert().values(post.dict())
-    post_id = await database.execute(insert_query)
-    post_db = await get_post_or_404(post_id, database)
+    insert_query = posts.insert().values(_post.dict())
+    post_id = await _database.execute(insert_query)
+    post_db = await get_post_or_404(post_id, _database)
 
     return post_db
