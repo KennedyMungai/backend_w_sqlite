@@ -88,6 +88,15 @@ async def list_posts(
     _pagination: Tuple[int, int] = Depends(pagination),
     _database: Database = Depends(get_database)
 ) -> list[PostDB]:
+    """List all posts from the datavase
+
+    Args:
+        _pagination (Tuple[int, int], optional): This defined pagination for the data fetched. Defaults to Depends(pagination).
+        _database (Database, optional): The datavase connection. Defaults to Depends(get_database).
+
+    Returns:
+        list[PostDB]: A list of all the posts from the database
+    """
     skip, limit = _pagination
     select_query = posts.select().offset(skip).limit(limit)
     rows = await _database.fetch_all(select_query)
