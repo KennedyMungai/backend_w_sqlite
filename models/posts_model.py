@@ -1,6 +1,5 @@
 """The file containing the model for the posts data"""
-from sqlalchemy import MetaData, Column, Integer, Table, String, Text, DateTime
-
+from sqlalchemy import Column, DateTime, Integer, MetaData, String, Table, Text
 
 metadata = MetaData()
 
