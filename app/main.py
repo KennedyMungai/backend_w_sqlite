@@ -88,7 +88,7 @@ async def list_posts(
     _pagination: Tuple[int, int] = Depends(pagination),
     _database: Database = Depends(get_database)
 ) -> list[PostDB]:
-    """List all posts from the datavase
+    """List all posts from the database
 
     Args:
         _pagination (Tuple[int, int], optional): This defined pagination for the data fetched. Defaults to Depends(pagination).
