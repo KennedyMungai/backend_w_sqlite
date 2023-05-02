@@ -1,9 +1,22 @@
 """The entrypoint fot the app"""
-from fastapi import FastAPI
-from database.database import database, sqlalchemy_engine
-from models.posts_model import metadata
+from databases import Database
+from fastapi import FastAPI, status, Depends, HTTPException
+from database.database import database, sqlalchemy_engine, get_database
+from models.posts_model import PostCreate, PostDB, metadata
 
 app = FastAPI()
+
+
+async def get_post_or_404(
+    id: int, database: Database = Depends(get_database)
+) -> PostDB:
+    select_query = posts.select().where(posts.c.id == id)
+    raw_post = await database.fetch_one(select_query)
+
+    if raw_post is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+    return PostDB(**raw_post)
 
 
 @app.on_event('startup')
@@ -30,3 +43,12 @@ async def root() -> dict[str, str]:
         dict[str, str]: A simple message to show that the backend works
     """
     return {'message': 'Hello World'}
+
+
+@app.post("/posts", name="Create a post", description="Endpoint to create a post", status_code=status.HTTP_201_CREATED, response_model=PostDB)
+async def create_post(post: PostCreate, database: Database = Depends(get_database)) -> PostDB:
+    insert_query = posts.insert().values(post.dict())
+    post_id = await database.execute(insert_query)
+    post_db = await get_post_or_404(post_id, database)
+
+    return post_db
