@@ -2,7 +2,9 @@
 from databases import Database
 from fastapi import FastAPI, status, Depends, HTTPException
 from database.database import database, sqlalchemy_engine, get_database
-from models.posts_model import PostCreate, PostDB, metadata
+from models.posts_model import PostCreate, PostDB, metadata, PostBase
+from typing import Tuple
+
 
 app = FastAPI()
 
@@ -17,6 +19,11 @@ async def get_post_or_404(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     return PostDB(**raw_post)
+
+
+async def pagination(skip: int = 0, limit: int = 10) -> Tuple[int, int]:
+    capped_limit = min(100, limit)
+    return (skip, capped_limit)
 
 
 @app.on_event('startup')
@@ -35,7 +42,7 @@ async def shutdown():
     await database.disconnect()
 
 
-@app.get('/', name="Root endpoint", description="An endpoint to test the app")
+@app.get('/', name="Root endpoint", description="An endpoint to test the app", tags=['Root'])
 async def root() -> dict[str, str]:
     """The root endpoint for the app
 
@@ -45,9 +52,16 @@ async def root() -> dict[str, str]:
     return {'message': 'Hello World'}
 
 
-@app.post("/posts", name="Create a post", description="Endpoint to create a post", status_code=status.HTTP_201_CREATED, response_model=PostDB)
+@app.post(
+    "/posts",
+    name="Create a post",
+    description="Endpoint to create a post",
+    status_code=status.HTTP_201_CREATED,
+    response_model=PostDB,
+    tags=['Posts']
+)
 async def create_post(_post: PostCreate, _database: Database = Depends(get_database)) -> PostDB:
-    """A create post enpoint
+    """A create post endpoint
 
     Args:
         post (PostCreate): The schema for the post to be created
@@ -61,3 +75,23 @@ async def create_post(_post: PostCreate, _database: Database = Depends(get_datab
     post_db = await get_post_or_404(post_id, _database)
 
     return post_db
+
+
+@app.get(
+    "/posts",
+    name="Get all posts",
+    description="Endpoint to get all posts",
+    response_model=list[PostDB],
+    tags=['Posts']
+)
+async def list_posts(
+    _pagination: Tuple[int, int] = Depends(pagination),
+    _database: Database = Depends(get_database)
+) -> list[PostDB]:
+    skip, limit = _pagination
+    select_query = posts.select().offset(skip).limit(limit)
+    rows = await _database.fetch_all(select_query)
+
+    results = [PostDB(**row) for row in rows]
+
+    return results
