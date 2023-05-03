@@ -50,8 +50,8 @@ class PostDB(PostBase):
     id: int
 
 
-class PostPublic(PostDB):
-    comments: List[CommentDB]
+# class PostPublic(PostDB):
+#     comments: List[CommentDB]
 
 
 metadata = MetaData()
