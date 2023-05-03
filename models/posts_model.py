@@ -1,6 +1,6 @@
 """The file containing the model for the posts data"""
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 from sqlalchemy import (Column, DateTime, ForeignKey, Integer, MetaData,
