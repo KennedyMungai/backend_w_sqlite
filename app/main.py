@@ -6,8 +6,18 @@ from fastapi import Depends, FastAPI, HTTPException, status
 
 from database.database import database, get_database, sqlalchemy_engine
 from models.posts_model import PostBase, PostCreate, PostDB, PostPartialUpdate, metadata
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 app = FastAPI()
+
+motor_client = AsyncIOMotorClient("mongodb://localhost:27017")
+
+# Connecting to the whole server
+database = motor_client["dumb_blogs"]
+
+
+def get_database() -> AsyncIOMotorDatabase:
+    return database
 
 
 async def get_post_or_404(
