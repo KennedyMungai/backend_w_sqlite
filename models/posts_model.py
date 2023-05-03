@@ -18,6 +18,7 @@ class PostBase(BaseModel):
     publication_date: datetime = Field(default_factory=datetime.now)
 
     class Config:
+        """The config subclass for the PostBase model"""
         orm_mode = True
 
 
