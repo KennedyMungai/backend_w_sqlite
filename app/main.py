@@ -21,6 +21,13 @@ def get_database() -> AsyncIOMotorDatabase:
     return database
 
 
+async def get_object_id(id: str) -> ObjectId:
+    try:
+        return ObjectId(id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 async def get_post_or_404(
     id: ObjectId = Depends(get_object_id), database: AsyncIOMotorDatabase = Depends(get_database)
 ) -> PostDB:
