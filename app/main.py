@@ -137,3 +137,16 @@ async def get_post(_post: PostDB = Depends(get_post_or_404)) -> PostDB:
         PostDB: The post to be returned
     """
     return _post
+
+
+# @app.post("/post/{_id}/comments", response_model=PostDB, status_code=status.HTTP_201_CREATED, tags=["Post"])
+# async def create_comment(
+#     _comment: CommentCreate,
+#     _post: PostDB = Depends(get_post_or_404),
+#     _database: AsyncIOMotorDatabase = Depends(get_database)
+# ) -> PostDB:
+#     await _database["dumb_blogs"].update_one({"_id": _post.id}, {"$push": {"comments": _comment.dict()}})
+
+#     _post_db = await get_post_or_404(_post.id, _database)
+
+#     return _post_db
