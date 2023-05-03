@@ -117,3 +117,22 @@ async def list_posts(
     results = [PostDB(**raw_post) async for raw_post in query]
 
     return results
+
+
+@app.get(
+    "/posts/{_id}",
+    name='Get Single Post',
+    description="Returns a single post of the given Id",
+    response_model=PostDB,
+    tags=["Post"]
+)
+async def get_post(_post: PostDB = Depends(get_post_or_404)) -> PostDB:
+    """A get single post endpoint
+
+    Args:
+        post (PostDB, optional): The post to be returned. Defaults to Depends(get_database).
+
+    Returns:
+        PostDB: The post to be returned
+    """
+    return _post
