@@ -22,15 +22,9 @@ def get_database() -> AsyncIOMotorDatabase:
 
 
 async def get_post_or_404(
-    id: int, database: Database = Depends(get_database)
+    id: ObjectId = Depends(get_object_id), database: AsyncIOMotorDatabase = Depends(get_database)
 ) -> PostDB:
-    select_query = posts.select().where(posts.c.id == id)
-    raw_post = await database.fetch_one(select_query)
-
-    if raw_post is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-    return PostDB(**raw_post)
+    raw_post = await database['dumb_blogs'].find_one({"_id": id})
 
 
 async def pagination(skip: int = 0, limit: int = 10) -> Tuple[int, int]:
